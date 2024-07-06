@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 template <typename T, int initial_value>
-class SparseMatrix {
+class Matrix {
    private:
     std::size_t m_size{0};
     std::unordered_map<int, std::unordered_map<int, T>> m_matrix;
@@ -13,7 +13,7 @@ class SparseMatrix {
     size_t size() const { return m_size; };
     class Proxy {
        private:
-        std::unordered_map<int, T> m_row;
+        std::unordered_map<int, T> &m_row;
 
        public:
         Proxy(std::unordered_map<int, T> &row) : m_row(row){};
@@ -38,12 +38,13 @@ class SparseMatrix {
 };
 
 int main() {
-    SparseMatrix<int, -1> matrix;
+    Matrix<int, -1> matrix;
     assert(matrix.size() == 0);  // все ячейки свободны
     auto a = matrix[0][0];
-    // assert(a == -1);    
+    assert(a == -1);
     assert(matrix.size() == 0);
     matrix[100][100] = 314;
     assert(matrix[100][100] == 314);
+    assert(matrix.size() == 1);
     return 0;
 }
