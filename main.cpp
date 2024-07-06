@@ -5,6 +5,8 @@
 
 template <typename T, int initial_value>
 class Matrix {
+    friend class Proxy;
+
    private:
     std::size_t m_size{0};
     std::unordered_map<int, std::unordered_map<int, T>> m_matrix;
@@ -20,9 +22,10 @@ class Matrix {
         T &operator[](int col) {
             std::cout << "T1"
                       << "\n";
-            std::cout << m_row[col] << "\n";
+            std::cout << m_row[col] << "\n";          
             return m_row[col];
         };
+        bool dd() { return true; };
     };
     Proxy operator[](int row) {
         std::cout << "A1"
@@ -32,7 +35,10 @@ class Matrix {
                       << "\n";
             return Proxy{it->second};
         } else {
-            return Proxy{m_matrix[row]};
+            auto m = Proxy{m_matrix[row]};
+            m.dd();
+            std::cout << "n:" << m_matrix.size() << std::endl;
+            return m;
         }
     };
 };
