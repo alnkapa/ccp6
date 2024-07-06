@@ -1,63 +1,48 @@
+#include <algorithm>
 #include <cassert>
 #include <iostream>
-#include <map>
-#include <tuple>
+#include <unordered_map>
 
 template <typename T, int initial_value>
 class SparseMatrix {
+   private:
+    std::size_t m_size{0};
+    std::unordered_map<int, std::unordered_map<int, T>> m_matrix;
+
    public:
-    using result_t = SparseMatrix<T, initial_value>;
-    using key_t = std::pair<int, int>;
-    size_t size() const { return m_matrix.size(); };
+    size_t size() const { return m_size; };
     class Proxy {
+       private:
+        std::unordered_map<int, T> m_row;
+
        public:
-        Proxy(result_t &parent, int row) : m_parent(parent), m_row(row){};
+        Proxy(std::unordered_map<int, T> &row) : m_row(row){};
         T &operator[](int col) {
             std::cout << "T1"
                       << "\n";
-            return m_parent.m_matrix[{m_row, col}];
+            std::cout << m_row[col] << "\n";
+            return m_row[col];
         };
-        const T operator[](int col) const {
-            std::cout << "T2"
-                      << "\n";
-            try {
-                return m_parent.m_matrix.at({m_row, col});
-            } catch (std::out_of_range) {
-                return initial_value;
-            }
-        };
-
-       private:
-        int m_row;
-        result_t &m_parent;
-    };
-    const Proxy operator[](int row) const {
-        std::cout << "A1"
-                  << "\n";
-        return Proxy{*this, row};
     };
     Proxy operator[](int row) {
         std::cout << "A1"
                   << "\n";
-        return Proxy{*this, row};
+        if (auto it = m_matrix.find(row); it != m_matrix.end()) {
+            std::cout << "it1"
+                      << "\n";
+            return Proxy{it->second};
+        } else {
+            return Proxy{m_matrix[row]};
+        }
     };
-    // const Proxy &operator[](int row) const {
-    //     std::cout << "A2"
-    //               << "\n";
-    //     const auto p = Proxy{this, row};
-    //     return p;
-    // };
-
-   private:
-    std::map<key_t, T> m_matrix;
 };
 
 int main() {
     SparseMatrix<int, -1> matrix;
     assert(matrix.size() == 0);  // все ячейки свободны
-    auto const a = matrix[0][0];
-    // // assert(a == -1);
-    // // assert(matrix.size() == 0);
+    auto a = matrix[0][0];
+    // assert(a == -1);    
+    assert(matrix.size() == 0);
     matrix[100][100] = 314;
     assert(matrix[100][100] == 314);
     return 0;
