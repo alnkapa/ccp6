@@ -43,47 +43,60 @@ class Matrix {
     };
 };
 struct Arg {
-    int i = 1;
-    int &value() &  // non-const lvalue
+    struct In {
+        int i;
+        int operator=(int in) {
+            std::cout << __PRETTY_FUNCTION__ << "\n";
+            return i;
+        };
+        In &operator=(const In &in) {
+            std::cout << __PRETTY_FUNCTION__ << "\n";
+            return *this;
+        };
+        const In &operator=(const In &in) const  {
+            std::cout << __PRETTY_FUNCTION__ << "\n";
+            return *this;
+        };
+    };
+    In i;
+    In &value() &  // non-const lvalue
     {
         std::cout << __PRETTY_FUNCTION__ << "\n";
         return i;
     }
 
-    int &&value() &&  // non-const rvalue
+    In &&value() &&  // non-const rvalue
     {
         std::cout << __PRETTY_FUNCTION__ << "\n";
         return std::move(i);  // propagate rvalue-ness
     }
 
-    const int &value() const &  // const lvalue
+    const In &value() const &  // const lvalue
     {
         std::cout << __PRETTY_FUNCTION__ << "\n";
         return i;
     }
 
-    const int &&value() const &&  // const rvalue
+    const In &&value() const &&  // const rvalue
     {
         std::cout << __PRETTY_FUNCTION__ << "\n";
         return std::move(i);  // propagate rvalue-ness
     }
 };
-template <class T>
-void wrapper(T &&arg) {
-    foo(forward<decltype(forward<T>(arg).get())>(forward<T>(arg).get()));
-}
+
 int main() {
     Arg m;
+    m.value() = 1;
     auto a = m.value();
-    m.value() = a;
-    const Arg m1;
-    auto b = m1.value();
-    // m1.value() = a;
-    auto d = Arg().value();  // вызов non-const rvalue
+    //m.value() = a;
+    // const Arg m1{};
+    // auto b = m1.value();
+    // // m1.value() = a;
+    // auto d = Arg().value();  // вызов non-const rvalue
 
-    // Arg().value() = 5;  // вызов non-const rvalue
+    // // Arg().value() = 5;  // вызов non-const rvalue
 
-    auto const d1 = Arg().value();  // вызов const rvalue
+    // auto const d1 = Arg().value();  // вызов const rvalue
 
     return 0;
 }
