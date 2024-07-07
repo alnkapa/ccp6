@@ -52,6 +52,7 @@ class Matrix {
 
    public:
     std::size_t size() const { return m_matrix.size(); };
+    void clear() { m_matrix.clear(); };
     Proxy operator[](int row) { return Proxy{m_matrix, row}; };
 
     Iterator begin() { return Iterator{m_matrix.begin()}; };
@@ -75,6 +76,38 @@ int main() {
         int v;
         std::tie(x, y, v) = c;
         std::cout << x << y << v << std::endl;
+    }
+    // Опционально реализовать каноническую форму оператора =,
+    // допускающую выражения ((matrix[100][100] = 314) = 0) = 217
+    ((matrix[100][100] = 314) = 0) = 217;
+    // выведется одна строка
+    // 100100217
+    for (auto c : matrix) {
+        int x;
+        int y;
+        int v;
+        std::tie(x, y, v) = c;
+        std::cout << x << y << v << std::endl;
+    }
+    matrix.clear();
+
+    // При запуске программы необходимо создать матрицу с пустым значением 0
+    Matrix<int, 0> matrix1;
+    // заполнить главную диагональ матрицы (от [0,0] до [9,9]) значениями от 0 до 9.
+    // Второстепенную диагональ (от [0,9] до [9,0]) значениями от 9 до 0.
+    for (int i = 0; i < 10; ++i) {
+        matrix1[i][i] = i;
+        matrix1[9 - i][i] = 9 - i;
+    }
+    // TODO: подумать как сделать Matrix::find(row,col)
+    for (auto c : matrix1) {
+        int x;
+        int y;
+        int v;
+        std::tie(x, y, v) = c;
+        if (x >= 1 && x <= 8 && y >= 1 && y <= 8) {
+            std::cout << x << " " << y << " " << v << std::endl;            
+        }
     }
     return 0;
 }
