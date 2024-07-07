@@ -39,7 +39,7 @@ class Matrix {
 
        public:
         using iterator_category = std::input_iterator_tag;
-        explicit Iterator(type_t::iterator ptr) : m_ptr(ptr){};
+        explicit Iterator(const type_t::iterator &ptr) : m_ptr(ptr){};
         Iterator &operator++() {
             m_ptr++;
             return *this;
